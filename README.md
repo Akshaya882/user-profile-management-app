@@ -103,9 +103,9 @@ user-profile-management-app/
    - Registration page:  
      `http://localhost/user-profile-management-app/register.html`
    - Login page:  
-     `[http://localhost/user-profile-management-app/index.html](http://localhost/user-profile-management-app/login.html)`
+     `http://localhost/user-profile-management-app/login.html`
    - Profile page (after login):  
-     `http://[localhost/user-profile-management-app/profile.html](http://localhost/user-profile-management-app/profile.html)`
+     `http://localhost/user-profile-management-app/profile.html`
 
 ## Guidelines Followed 
 
