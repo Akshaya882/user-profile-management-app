@@ -1,33 +1,35 @@
 $(document).ready(function () {
-  $('#loginForm').submit(function (e) {
-    e.preventDefault(); // Prevent default form submission
+    $("#loginBtn").click(function () {
+        const email = $("#email").val();
+        const password = $("#password").val();
 
-    const loginData = {
-      username: $('#username').val(),
-      password: $('#password').val()
-    };
-
-    // Send AJAX request to PHP
-    $.ajax({
-      url: 'php/login.php',
-      type: 'POST',
-      data: loginData,
-      success: function (response) {
-        console.log("Server response:", response); // Debugging output
-
-        // Trim to remove whitespace/newlines
-        if (response.trim() === "success") {
-          // Store username in localStorage
-          localStorage.setItem("username", loginData.username);
-          alert("Login successful!");
-          window.location.href = "profile.html"; // Redirect
-        } else {
-          alert(response); // Show error from PHP
+        if (!email || !password) {
+            alert("Please enter both email and password.");
+            return;
         }
-      },
-      error: function () {
-        alert("Login request failed."); // AJAX failure
-      }
+
+        $.ajax({
+            url: "php/login.php",
+            type: "POST",
+            data: {
+                email: email,
+                password: password
+            },
+            success: function (response) {
+                console.log("Login response:", response);
+
+                if (response.trim() === "success") {
+                    alert("Login successful!");
+                    localStorage.setItem("email", email);
+                    window.location.href = "profile.html";
+                } else {
+                    alert("Invalid credentials. Please try again.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText || error);
+                alert("An error occurred during login.");
+            }
+        });
     });
-  });
 });
