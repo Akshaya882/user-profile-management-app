@@ -1,35 +1,40 @@
 <?php
-require '../db/mongo.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $dob = $_POST['dob'] ?? '';
-    $contact = $_POST['contact'] ?? '';
+use MongoDB\Client;
+use Dotenv\Dotenv;
 
-    if ($username !== '') {
-        $result = $profileCollection->updateOne(
-            ['username' => $username],
-            ['$set' => [
-                'email' => $email,
-                'dob' => $dob,
-                'contact' => $contact
-            ]]
-        );
+// Load environment variables
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
 
-        if ($result->getMatchedCount() > 0) {
-            if ($result->getModifiedCount() > 0) {
-                echo "Profile updated successfully!";
-            } else {
-                echo "No changes made. Same values.";
-            }
-        } else {
-            echo "Username not found in MongoDB.";
-        }
+header('Content-Type: application/json');
+
+// Read values from AJAX
+$email = $_POST['email'] ?? '';
+$dob = $_POST['dob'] ?? '';
+$contact = $_POST['contact'] ?? '';
+
+if (!$email || !$dob || !$contact) {
+    echo json_encode(["error" => "Missing required fields."]);
+    exit;
+}
+
+try {
+    $mongoClient = new Client("mongodb://localhost:27017");
+    $collection = $mongoClient->guvi_intern->profiles;
+
+    $result = $collection->updateOne(
+        ['email' => $email],
+        ['$set' => ['dob' => $dob, 'contact' => $contact]]
+    );
+
+    if ($result->getModifiedCount() > 0) {
+        echo json_encode(["success" => true]);
     } else {
-        echo "Username is missing in request.";
+        echo json_encode(["error" => "No changes made or user not found."]);
     }
-} else {
-    echo "Invalid request method.";
+} catch (Exception $e) {
+    echo json_encode(["error" => $e->getMessage()]);
 }
 ?>
