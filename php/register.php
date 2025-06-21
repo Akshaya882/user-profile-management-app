@@ -1,43 +1,66 @@
 <?php
-require '../db/mongo.php';
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-$host = "localhost";
-$port = 3307;
-$dbname = "guvi_intern";
-$username = "root";
-$password = "";
+// Load Composer's autoloader and dotenv
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$conn = new mysqli($host, $username, $password, $dbname, $port);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+use Dotenv\Dotenv;
+use MongoDB\Client as MongoClient;
+
+// Load environment variables
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
+// MySQL Connection
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$user = $_ENV['DB_USER'] ?? 'root';
+$pass = $_ENV['DB_PASS'] ?? '';
+$dbname = $_ENV['DB_NAME'] ?? 'guvi_intern';
+$port = $_ENV['DB_PORT'] ?? 3306;
+
+$mysql_conn = new mysqli($host, $user, $pass, $dbname, $port);
+
+if ($mysql_conn->connect_error) {
+    die("MySQL Connection failed: " . $mysql_conn->connect_error);
 }
 
-$username = $_POST['username'];
-$rawPassword = $_POST['password'];
-$hashedPassword = password_hash($rawPassword, PASSWORD_DEFAULT);
-$email = $_POST['email'];
-$dob = $_POST['dob'];
-$contact = $_POST['contact'];
+// Receive data from AJAX
+$username = $_POST['username'] ?? '';
+$email = $_POST['email'] ?? '';
+$password = password_hash($_POST['password'] ?? '', PASSWORD_DEFAULT);
+$dob = $_POST['dob'] ?? '';
+$contact = $_POST['contact'] ?? '';
 
-// Store login info in MySQL
-$stmt = $conn->prepare("INSERT INTO users (username, password, email, dob, contact) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("sssss", $username, $hashedPassword, $email, $dob, $contact);
+// Insert into MySQL
+$stmt = $mysql_conn->prepare("INSERT INTO users (username, email, password, dob, contact) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("sssss", $username, $email, $password, $dob, $contact);
 
-if ($stmt->execute()) {
-    // Store profile info in MongoDB
-    $profileData = [
-        'username' => $username,
+if (!$stmt->execute()) {
+    echo "MySQL Error: " . $stmt->error;
+    $stmt->close();
+    $mysql_conn->close();
+    exit;
+}
+$stmt->close();
+$mysql_conn->close();
+
+// Insert into MongoDB
+try {
+    $mongoClient = new MongoClient("mongodb://127.0.0.1:27017");
+    $mongoDB = $mongoClient->guvi_intern;
+    $collection = $mongoDB->profiles;
+
+    $collection->insertOne([
         'email' => $email,
         'dob' => $dob,
         'contact' => $contact
-    ];
-    $profileCollection->insertOne($profileData);
+    ]);
 
-    echo "Registered successfully!";
-} else {
-    echo "Error: " . $stmt->error;
+    echo "success";
+} catch (Exception $e) {
+    echo "MongoDB Error: " . $e->getMessage();
 }
-
-$stmt->close();
-$conn->close();
 ?>
