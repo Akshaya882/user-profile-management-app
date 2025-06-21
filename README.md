@@ -75,7 +75,7 @@ user-profile-management-app/
 - Open [phpMyAdmin](http://localhost/phpmyadmin)
 - Run the following SQL script:
 
-- sql
+```sql
 CREATE DATABASE guvi_intern;
 USE guvi_intern;
 CREATE TABLE users (
