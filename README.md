@@ -63,8 +63,9 @@ user-profile-management-app/
 ├── .env                    → Environment configuration
 ├── composer.json           → Composer package file
 └── README.md               → Project documentation
+---
 
-## How to Run This Project Locally
+### How to Run This Project Locally
 
 ### 1. Install Prerequisites
 - Install and configure **XAMPP** (start Apache and MySQL)
