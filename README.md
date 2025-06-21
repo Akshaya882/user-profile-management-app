@@ -35,7 +35,7 @@ This is a full-stack web application developed as part of a developer internship
 ---
 
 ## Folder Structure
-
+```txt
 user-profile-management-app/
 ├── index.html              → Login page
 ├── register.html           → Registration page
