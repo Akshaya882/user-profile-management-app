@@ -1,80 +1,86 @@
 # Web Profile Management System
 
-This is a full-stack web application developed as part of a developer internship task. The application allows users to register, log in, view, and update their profile while maintaining login sessions using browser-based storage. It follows a dual-database architecture using MySQL for authentication and MongoDB for profile information.
+This is a full-stack web application built as part of a developer internship task. The app allows users to register, log in, view and update their profile, and maintain login sessions using browser-based storage. It uses a dual-database architecture — **MySQL** for authentication and **MongoDB** for profile data.
 
 ---
 
-## Features
+##  Features
 
-### User Registration
-- Stores user credentials (email and hashed password) in MySQL.
-- Stores user profile details (DOB and contact number) in MongoDB.
+###  User Registration
+- Stores login information (email, hashed password) in **MySQL**
+- Stores profile information (DOB, contact) in **MongoDB**
 
-### User Login
-- Validates user credentials using PHP and MySQL (with prepared statements).
-- Maintains login session using browser localStorage (no PHP session).
+###  User Login
+- Verifies credentials using **PHP and MySQL** (with prepared statements)
+- Stores session in **browser localStorage** (not using PHP sessions)
 
-### User Profile
-- Fetches and displays user profile from MongoDB post-login.
-- Supports editing and updating of profile via AJAX.
+###  User Profile
+- Loads user profile from **MongoDB** after login
+- Supports live update of profile fields using **AJAX**
+- Displays user info dynamically on the profile page
 
-### Logout
-- Clears the localStorage session and redirects the user to the login page.
-
----
-
-## Technology Stack
-
-- **Frontend**: HTML, CSS (Bootstrap), jQuery, AJAX
-- **Backend**: PHP
-- **Databases**:
-  - MySQL – stores login data
-  - MongoDB – stores profile information
-- **Development Tools**: XAMPP, MongoDB Compass, Composer, dotenv (.env)
+###  Logout
+- Clears localStorage session
+- Redirects to login page
 
 ---
 
-## Folder Structure
+##  Tech Stack
+
+- **Frontend**: HTML, CSS (Bootstrap), jQuery, AJAX  
+- **Backend**: PHP  
+- **Databases**:  
+  - **MySQL** – For login credentials  
+  - **MongoDB** – For profile data  
+- **Tools**: XAMPP, MongoDB Compass, Composer, `.env` environment file
+
+---
+
+##  Folder Structure
+
 ```txt
 user-profile-management-app/
 ├── index.html              → Login page
 ├── register.html           → Registration page
-├── profile.html            → Profile view and update page
+├── profile.html            → Profile view + update + logout
 │
 ├── css/
-│   └── style.css           → Custom CSS styling
+│   └── style.css           → Custom styling
 │
 ├── js/
-│   ├── login.js            → Handles login AJAX
-│   ├── register.js         → Handles registration AJAX
-│   └── profile.js          → Handles profile fetch/update/logout
+│   ├── login.js            → AJAX for login
+│   ├── register.js         → AJAX for registration
+│   └── profile.js          → AJAX for profile load, update, logout
 │
 ├── php/
-│   ├── login.php           → Login backend with MySQL
-│   ├── register.php        → Handles registration (MySQL + MongoDB)
-│   ├── profile.php         → Loads user profile from MongoDB
+│   ├── login.php           → Login backend with .env + MySQL
+│   ├── register.php        → Registration backend (MySQL + MongoDB)
+│   ├── profile.php         → Fetches user data from MongoDB
 │   └── update.php          → Updates user profile in MongoDB
 │
 ├── db/
-│   ├── mysql.php           → MySQL connection using dotenv
-│   └── mongo.php           → MongoDB connection using dotenv
+│   ├── mysql.php           → MySQL DB connection using .env
+│   └── mongo.php           → MongoDB connection using .env
 │
-├── vendor/                 → Composer dependencies
-├── .env                    → Environment configuration
-├── composer.json           → Composer package file
+├── vendor/                 → Composer packages (for MongoDB + dotenv)
+├── .env                    → Environment config for DB credentials
+├── composer.json           → Composer config file
 └── README.md               → Project documentation
+```
+
 ---
 
-### How to Run This Project Locally
+##  How to Run This Project Locally
 
-### 1. Install Prerequisites
-- Install and configure **XAMPP** (start Apache and MySQL)
-- Install **MongoDB** and **MongoDB Compass**
-- Install **Composer** globally on your system
+### 1. Install Required Tools
 
-### 2. Configure MySQL
-- Open [phpMyAdmin](http://localhost/phpmyadmin)
-- Run the following SQL script:
+- XAMPP (Apache + MySQL)  
+- MongoDB (with MongoDB Compass)  
+- Composer (PHP package manager)
+
+### 2. Set Up MySQL Database
+
+Visit `http://localhost/phpmyadmin`, and run:
 
 ```sql
 CREATE DATABASE guvi_intern;
@@ -87,9 +93,13 @@ CREATE TABLE users (
   dob DATE,
   contact VARCHAR(20)
 );
+```
 
-### 3. Create `.env` File
-Create a `.env` file in the root directory of your project and add the following content:
+### 3. Set Up `.env` File
+
+Create a `.env` file in your root directory:
+
+```env
 DB_HOST=localhost
 DB_USER=root
 DB_PASS=
@@ -97,36 +107,54 @@ DB_NAME=guvi_intern
 DB_PORT=3306
 
 MONGO_URI=mongodb://127.0.0.1:27017
+```
 
-### Start the Servers**:
-   - Start Apache and MySQL from XAMPP control panel
-   - Open Command Prompt and run:
-     ```
-     mongod
-     ```
+> Change ports/user/passwords as needed based on your system setup.
 
-### Open the App in Browser**:
-   - Registration page:  
-     `http://localhost/user-profile-management-app/register.html`
-   - Login page:  
-     `http://localhost/user-profile-management-app/index.html`
-   - Profile page (after login):  
-     `http://localhost/user-profile-management-app/profile.html`
+### 4. Start the Servers
 
-### Guidelines Followed 
+- Open **XAMPP** → Start Apache + MySQL  
+- Open a terminal → Run `mongod` (to start MongoDB server)
 
-- All files separated (HTML, JS, PHP)
-- No form submission — only AJAX used
-- Session maintained using localStorage
-- Redis used in backend for session validation
-- MySQL + MongoDB used correctly
-- Composer used for MongoDB driver
-- Passwords hashed (not stored in plain text)
+### 5. Open the App
+
+- Register:  
+  `http://localhost/user-profile-management-app/register.html`
+- Login:  
+  `http://localhost/user-profile-management-app/index.html`
+- Profile:  
+  `http://localhost/user-profile-management-app/profile.html`
 
 ---
 
+##  Mobile & Desktop View Testing
+
+To test the app on your mobile device:
+
+1. Connect mobile and PC to the **same Wi-Fi network**
+2. Find your PC's **local IP** (e.g., `192.168.1.4`)
+3. On your mobile browser, visit:
+
+   ```
+   http://192.168.1.4/user-profile-management-app/register.html
+   ```
+
+> Make sure firewall allows access and Apache is running.
+
 ---
 
-## Author
+##  Guidelines Followed
 
-Created by Akshaya N as part of an internship evaluation task.
+- Modular structure with separate folders for PHP, JS, CSS, DB  
+- All user interactions handled via **AJAX** (no form submit reloads)  
+- Uses `.env` securely to store DB credentials  
+- MongoDB + MySQL integrated together  
+- Passwords are securely **hashed** using `password_hash()`  
+- Fully tested on **both desktop and mobile**
+
+---
+
+##  Author
+
+Created by **Akshaya N**  
+As part of an internship task submission and learning project.
